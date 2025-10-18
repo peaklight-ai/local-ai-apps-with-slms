@@ -54,7 +54,7 @@ This repository contains research and implementation work exploring **Small Lang
 
 ## 🛠️ Technology Stack
 
-- **Models:** Phi-4, Mistral, Gemma, WANN 2.2, and other SLMs
+- **Models:** Phi-4, Mistral, Gemma, WAN 2.2, and other SLMs
 - **Optimization:** Quantization, pruning, distillation techniques
 - **Deployment Targets:** On-device (mobile/laptop) and edge computing environments
 - **Version Control:** GitHub with milestone tagging
