@@ -16,7 +16,7 @@ This repository contains research and implementation work exploring **Small Lang
 
 ## 👥 Research Team
 
-- **Hesam** - Model Research & Comparison (multimodal SLMs, WANN 2.0)
+- **Hesam** - Model Research & Comparison (multimodal SLMs, WAN 2.2)
 - **Chadi Abi Fadel** - Environment Setup, GitHub Management, Infrastructure
 - **Asma** - Evaluation Metrics & Documentation
 
