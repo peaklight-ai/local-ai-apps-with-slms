@@ -8,7 +8,7 @@ This repository contains research and implementation work exploring **Small Lang
 
 ## 🔬 Research Objectives
 
-- **Evaluate and compare** existing SLMs (Phi-3, Mistral, Gemma, WANN 2.0, etc.) for on-device/edge deployment
+- **Evaluate and compare** existing SLMs (Phi-4, Mistral, Gemma, WAN 2.2, etc.) for on-device/edge deployment
 - **Develop practical applications** such as local summarizers, personal assistants, or code helpers
 - **Optimize models** through quantization, pruning, and distillation techniques
 - **Benchmark performance** across multiple dimensions: latency, accuracy, memory footprint, and user experience
@@ -54,7 +54,7 @@ This repository contains research and implementation work exploring **Small Lang
 
 ## 🛠️ Technology Stack
 
-- **Models:** Phi-3, Mistral, Gemma, WANN 2.0, and other SLMs
+- **Models:** Phi-4, Mistral, Gemma, WANN 2.2, and other SLMs
 - **Optimization:** Quantization, pruning, distillation techniques
 - **Deployment Targets:** On-device (mobile/laptop) and edge computing environments
 - **Version Control:** GitHub with milestone tagging
