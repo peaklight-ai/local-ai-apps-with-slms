@@ -1,5 +1,4 @@
 import { pipeline, Pipeline } from '@xenova/transformers'
-import { HierarchicalNSW } from 'hnswlib-node'
 
 export interface Document {
   id: string
@@ -62,22 +61,33 @@ export class TransformersEmbedding implements EmbeddingModel {
 }
 
 /**
- * Vector store using HNSW (Hierarchical Navigable Small World)
- * Fast approximate nearest neighbor search
+ * Simple in-memory vector store with cosine similarity search
  */
 export class VectorStore {
-  private index: HierarchicalNSW
-  private documents: Map<number, Document>
+  private documents: Document[] = []
+  private documentEmbeddings: number[][] = []
   private embeddings: EmbeddingModel
-  private dimension: number
-  private nextId: number
 
-  constructor(embeddings: EmbeddingModel, dimension: number = 384) {
+  constructor(embeddings: EmbeddingModel) {
     this.embeddings = embeddings
-    this.dimension = dimension
-    this.index = new HierarchicalNSW('cosine', dimension)
-    this.documents = new Map()
-    this.nextId = 0
+  }
+
+  /**
+   * Cosine similarity between two vectors
+   */
+  private cosineSimilarity(a: number[], b: number[]): number {
+    let dotProduct = 0
+    let normA = 0
+    let normB = 0
+
+    for (let i = 0; i < a.length; i++) {
+      dotProduct += a[i] * b[i]
+      normA += a[i] * a[i]
+      normB += b[i] * b[i]
+    }
+
+    if (normA === 0 || normB === 0) return 0
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
   }
 
   /**
@@ -87,23 +97,15 @@ export class VectorStore {
     const texts = documents.map(doc => doc.text)
     const embeddings = await this.embeddings.embed(texts)
 
-    // Initialize index if first time
-    if (this.nextId === 0) {
-      this.index.initIndex(documents.length * 2) // Allocate some extra space
-    }
-
-    for (let i = 0; i < documents.length; i++) {
-      const docId = this.nextId++
-      this.index.addPoint(embeddings[i], docId)
-      this.documents.set(docId, documents[i])
-    }
+    this.documents.push(...documents)
+    this.documentEmbeddings.push(...embeddings)
   }
 
   /**
-   * Search for similar documents
+   * Search for similar documents using cosine similarity
    */
   async search(query: string, k: number = 5): Promise<SearchResult[]> {
-    if (this.documents.size === 0) {
+    if (this.documents.length === 0) {
       return []
     }
 
@@ -111,57 +113,39 @@ export class VectorStore {
     const queryEmbeddings = await this.embeddings.embed([query])
     const queryEmbedding = queryEmbeddings[0]
 
-    // Search index
-    const result = this.index.searchKnn(queryEmbedding, k)
+    // Calculate similarities
+    const similarities: Array<{ index: number; score: number }> = []
 
-    // Map results to documents
-    const searchResults: SearchResult[] = []
-
-    for (let i = 0; i < result.neighbors.length; i++) {
-      const docId = result.neighbors[i]
-      const distance = result.distances[i]
-      const document = this.documents.get(docId)
-
-      if (document) {
-        searchResults.push({
-          document,
-          score: 1 - distance, // Convert distance to similarity score
-          distance
-        })
-      }
+    for (let i = 0; i < this.documentEmbeddings.length; i++) {
+      const score = this.cosineSimilarity(queryEmbedding, this.documentEmbeddings[i])
+      similarities.push({ index: i, score })
     }
 
-    return searchResults
+    // Sort by score (highest first)
+    similarities.sort((a, b) => b.score - a.score)
+
+    // Return top-k results
+    const topK = similarities.slice(0, k)
+    return topK.map(({ index, score }) => ({
+      document: this.documents[index],
+      score,
+      distance: 1 - score
+    }))
   }
 
   /**
    * Clear all documents
    */
   clear(): void {
-    this.documents.clear()
-    this.index = new HierarchicalNSW('cosine', this.dimension)
-    this.nextId = 0
+    this.documents = []
+    this.documentEmbeddings = []
   }
 
   /**
    * Get number of documents
    */
   size(): number {
-    return this.documents.size
-  }
-
-  /**
-   * Save index to disk
-   */
-  save(path: string): void {
-    this.index.writeIndex(path)
-  }
-
-  /**
-   * Load index from disk
-   */
-  load(path: string, maxElements: number): void {
-    this.index.readIndex(path, maxElements)
+    return this.documents.length
   }
 }
 
@@ -232,6 +216,6 @@ export async function createRAGEngine(): Promise<RAGEngine> {
   const embeddings = new TransformersEmbedding()
   await embeddings.initialize()
 
-  const vectorStore = new VectorStore(embeddings, embeddings.getDimension())
+  const vectorStore = new VectorStore(embeddings)
   return new RAGEngine(vectorStore)
 }
