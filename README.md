@@ -1,6 +1,10 @@
-# DocSummarizer - Private AI Document Assistant
+# Baynetna - Private AI Document Assistant
+
+**"بيناتنا" (Between Us) - Powered by peaklight.ai**
 
 A privacy-focused document summarizer and chat application that runs **entirely on your device** using local Small Language Models (SLMs). No internet required, no data leaves your machine.
+
+> **Baynetna** is Lebanese Arabic for "between us" - representing privacy, confidentiality, and trust. What happens baynetna, stays baynetna.
 
 ## Features
 
@@ -250,19 +254,25 @@ ollama pull qwen3:8b
 
 ## Roadmap
 
+### ✅ Completed (v0.1.0)
 - [x] Desktop app (Mac, Windows, Linux)
 - [x] PDF and DOCX parsing
 - [x] AI-powered summarization
-- [x] RAG-based chat
-- [x] PDF export
+- [x] RAG-based chat with vector embeddings
+- [x] PDF export with branding
 - [x] Ollama integration
-- [ ] HuggingFace model search and download
-- [ ] Mobile app (iOS, Android)
-- [ ] OCR support for scanned documents
-- [ ] Multi-document chat
-- [ ] Custom prompts and templates
-- [ ] Model fine-tuning UI
-- [ ] Collaborative features (local network)
+- [x] Comprehensive branding (Baynetna)
+- [x] Multi-path logo resolution
+- [x] Lazy-loaded transformers for fast startup
+
+### 🚧 Planned Features (Non-Chat)
+See [FUTURE_FEATURES.md](./docs/FUTURE_FEATURES.md) for detailed feature roadmap including:
+- Document comparison and diff visualization
+- Batch processing and automation
+- Smart tagging and categorization
+- Visual document analytics
+- Template-based document generation
+- And more...
 
 ## Contributing
 
@@ -280,6 +290,12 @@ This project is part of the PLAI Research initiative at peaklight.ai.
 
 ---
 
-**Built with ❤️ by the peaklight.ai team**
+**Built with ❤️ by peaklight.ai**
 
 *peaklight.ai - your AI supercharger*
+
+---
+
+### Brand Identity
+
+Baynetna embodies Lebanese cultural values of privacy and trust. The name reflects our core promise: **what happens baynetna, stays baynetna**. See [branding/BRAND_GUIDE.md](./branding/BRAND_GUIDE.md) for complete brand guidelines.

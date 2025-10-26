@@ -1,8 +1,10 @@
-# Project Summary - DocSummarizer
+# Project Summary - Baynetna
 
 ## What We Built
 
-A **complete, production-ready desktop application** for private document summarization and Q&A using local AI models. The app runs entirely on-device with no cloud dependencies, ensuring 100% privacy.
+**Baynetna** (بيناتنا) - A **complete, production-ready desktop application** for private document summarization and Q&A using local AI models. The app runs entirely on-device with no cloud dependencies, ensuring 100% privacy.
+
+**Baynetna** is Lebanese Arabic for "between us," embodying our commitment to privacy and confidentiality - what happens baynetna, stays baynetna.
 
 ## Key Achievements
 
@@ -28,14 +30,24 @@ A **complete, production-ready desktop application** for private document summar
 
 3. **RAG-Powered Chat**
    - Vector embeddings with Transformers.js (all-MiniLM-L6-v2)
-   - HNSW vector search for fast similarity matching
+   - Pure JavaScript vector store with cosine similarity
    - Context-aware Q&A with document retrieval
    - Real-time chat interface
+   - Lazy-loaded transformers for fast app startup
 
 4. **PDF Export**
    - Export summaries to PDF
    - Export chat conversations to PDF
    - Professional formatting with jsPDF
+   - Branded exports with peaklight.ai logo
+   - Multi-path logo resolution for dev/production
+
+5. **Brand Identity**
+   - Complete Baynetna rebranding
+   - Comprehensive brand guidelines
+   - 12 logo variants (purple, black, green)
+   - Cultural storytelling (Lebanese heritage)
+   - "Powered by peaklight.ai" tagline throughout
 
 ### ✅ Robust Architecture
 
@@ -81,12 +93,12 @@ local-ai-apps-with-slms/
 - Easy model swapping
 - Active community support
 
-### 3. **HNSW over FAISS**
-**Why:** Lighter weight and Node.js compatible.
-- No Python dependency
-- Fast approximate nearest neighbor search
-- Smaller bundle size
-- Good enough for single-document RAG
+### 3. **Pure JavaScript Vector Store over HNSW/FAISS**
+**Why:** Eliminated native dependencies for maximum compatibility.
+- No native modules (hnswlib was causing issues)
+- Simple cosine similarity search
+- Perfect for single-document RAG
+- Reliable cross-platform deployment
 
 ### 4. **Transformers.js over Local Embeddings**
 **Why:** No external dependencies, runs in Node.js.
@@ -98,11 +110,13 @@ local-ai-apps-with-slms/
 ## What's Ready to Use
 
 ### Immediately Functional (After Setup)
-1. ✅ Document upload and parsing
+1. ✅ Document upload and parsing (PDF, DOCX, TXT, MD)
 2. ✅ AI summarization (requires Ollama + model)
-3. ✅ RAG-powered chat (requires Ollama + model)
-4. ✅ PDF export
+3. ✅ RAG-powered chat with vector embeddings (requires Ollama + model)
+4. ✅ PDF export with Baynetna branding
 5. ✅ Model selection UI
+6. ✅ Responsive text handling and proper wrapping
+7. ✅ Professional branded exports
 
 ### Setup Required
 1. Install pnpm and dependencies (`pnpm install`)
@@ -117,7 +131,8 @@ local-ai-apps-with-slms/
 - [ ] **Model Download Progress** - Show download progress in UI
 - [ ] **Settings Persistence** - Save user preferences
 - [ ] **Recent Documents** - Persist recent document list
-- [ ] **Chat Export to PDF** - Currently only summary export works
+- [ ] **Document Library** - Organize and search past documents
+- [ ] **Export Customization** - Choose logo, colors, fonts for exports
 
 ### Phase 2 Features
 - [ ] **Mobile App** - React Native version for iOS/Android
