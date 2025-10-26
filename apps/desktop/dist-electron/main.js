@@ -18,8 +18,16 @@ const createWindow = () => {
     titleBarStyle: "hiddenInset",
     backgroundColor: "#ffffff"
   });
-  if (process.env.VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+  const devServerUrl = process.env.VITE_DEV_SERVER_URL || "http://localhost:5173";
+  const isDev = process.env.NODE_ENV !== "production";
+  console.log("[Main] Environment:", {
+    VITE_DEV_SERVER_URL: process.env.VITE_DEV_SERVER_URL,
+    NODE_ENV: process.env.NODE_ENV,
+    isDev,
+    devServerUrl
+  });
+  if (isDev) {
+    mainWindow.loadURL(devServerUrl);
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
@@ -86,4 +94,3 @@ electron.ipcMain.handle("fs:writeFile", async (_, filePath, data) => {
 electron.ipcMain.handle("app:getPath", (_, name) => {
   return electron.app.getPath(name);
 });
-//# sourceMappingURL=main.js.map
