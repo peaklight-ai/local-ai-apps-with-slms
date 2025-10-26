@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*", "electron/**/*"],
+  "references": [
+    { "path": "../../packages/shared-ui" },
+    { "path": "../../packages/rag-engine" },
+    { "path": "../../packages/document-parsers" },
+    { "path": "../../packages/llm-client" }
+  ]
+}
