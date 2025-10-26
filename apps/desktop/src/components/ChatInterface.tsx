@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Send, Bot, User } from 'lucide-react'
+import { Send, Bot, User, AlertCircle, Loader2 } from 'lucide-react'
 import type { Document } from '../App'
+import { ragService } from '../services/ragService'
+import { llmService } from '../services/llmService'
 
 interface Message {
   id: string
@@ -24,6 +26,9 @@ export function ChatInterface({ document }: Props) {
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [isIndexing, setIsIndexing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isIndexed, setIsIndexed] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -34,8 +39,28 @@ export function ChatInterface({ document }: Props) {
     scrollToBottom()
   }, [messages])
 
+  useEffect(() => {
+    // Index document when it changes
+    indexDocument()
+  }, [document.id])
+
+  const indexDocument = async () => {
+    setIsIndexing(true)
+    setError(null)
+
+    try {
+      await ragService.indexDocument(document.id, document.content)
+      setIsIndexed(true)
+    } catch (error: any) {
+      console.error('Error indexing document:', error)
+      setError('Failed to index document for chat')
+    } finally {
+      setIsIndexing(false)
+    }
+  }
+
   const handleSend = async () => {
-    if (!input.trim()) return
+    if (!input.trim() || !isIndexed) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -45,24 +70,45 @@ export function ChatInterface({ document }: Props) {
     }
 
     setMessages(prev => [...prev, userMessage])
+    const question = input
     setInput('')
     setIsTyping(true)
 
     try {
-      // TODO: Call RAG pipeline with LLM
-      // For now, simulate response
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Get context from RAG
+      const promptWithContext = await ragService.query(question, 3)
+
+      // Generate response with LLM
+      const response = await llmService.chat([
+        {
+          role: 'system',
+          content: 'You are a helpful assistant that answers questions about documents based on the provided context. Be concise and accurate.'
+        },
+        {
+          role: 'user',
+          content: promptWithContext
+        }
+      ])
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Based on the document, here's my answer to "${input}": [This is a simulated response. RAG implementation coming soon.]`,
+        content: response,
         timestamp: new Date()
       }
 
       setMessages(prev => [...prev, assistantMessage])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting response:', error)
+
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `I encountered an error: ${error.message || 'Failed to generate response'}. Please make sure Ollama is running.`,
+        timestamp: new Date()
+      }
+
+      setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsTyping(false)
     }
@@ -77,6 +123,21 @@ export function ChatInterface({ document }: Props) {
 
   return (
     <div className="h-full flex flex-col bg-gray-50">
+      {/* Indexing Status */}
+      {isIndexing && (
+        <div className="bg-blue-50 border-b border-blue-200 px-6 py-3 flex items-center gap-2">
+          <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+          <span className="text-sm text-blue-800">Indexing document for chat...</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 border-b border-red-200 px-6 py-3 flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 text-red-600 mt-0.5" />
+          <span className="text-sm text-red-800">{error}</span>
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto space-y-4">
@@ -150,12 +211,13 @@ export function ChatInterface({ document }: Props) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask a question about the document..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder={isIndexed ? "Ask a question about the document..." : "Indexing document..."}
+            disabled={!isIndexed || isIndexing}
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || isTyping}
+            disabled={!input.trim() || isTyping || !isIndexed}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             <Send className="w-4 h-4" />

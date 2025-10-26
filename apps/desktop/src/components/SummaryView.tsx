@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Download, Sparkles, Loader2, FileText } from 'lucide-react'
+import { Download, Sparkles, Loader2, FileText, AlertCircle, CheckCircle } from 'lucide-react'
 import type { Document } from '../App'
+import { llmService } from '../services/llmService'
+import { pdfExportService } from '../services/pdfExportService'
 
 interface Props {
   document: Document
@@ -9,6 +11,9 @@ interface Props {
 export function SummaryView({ document }: Props) {
   const [summary, setSummary] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [exportSuccess, setExportSuccess] = useState(false)
 
   useEffect(() => {
     // Auto-generate summary when document changes
@@ -17,42 +22,49 @@ export function SummaryView({ document }: Props) {
 
   const generateSummary = async () => {
     setIsGenerating(true)
+    setError(null)
 
     try {
-      // TODO: Call LLM API to generate summary
-      // For now, simulate with timeout
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      setSummary(`This is a summary of ${document.name}.
-
-The document contains important information about various topics. Key points include:
-
-• Main topic discussion and analysis
-• Supporting evidence and examples
-• Conclusions and recommendations
-
-This summary was generated locally using on-device AI to ensure your privacy.`)
-
-    } catch (error) {
+      // Generate summary using LLM
+      const generatedSummary = await llmService.summarize(document.content)
+      setSummary(generatedSummary)
+    } catch (error: any) {
       console.error('Error generating summary:', error)
-      setSummary('Error generating summary. Please try again.')
+      setError(error.message || 'Failed to generate summary. Make sure Ollama is running.')
+      setSummary('')
     } finally {
       setIsGenerating(false)
     }
   }
 
   const handleExportPDF = async () => {
+    if (!summary) return
+
     try {
+      setIsExporting(true)
+      setExportSuccess(false)
+
       const fileName = `${document.name.replace(/\.[^/.]+$/, '')}_summary.pdf`
       const filePath = await window.electronAPI.saveFile(fileName)
 
       if (filePath) {
-        // TODO: Generate PDF and save
-        console.log('Exporting to:', filePath)
-        alert('PDF export will be implemented soon!')
+        // Generate PDF
+        const pdfData = await pdfExportService.exportSummary(
+          document.name,
+          summary
+        )
+
+        // Write to file
+        await window.electronAPI.writeFile(filePath, Array.from(new Uint8Array(pdfData)))
+
+        setExportSuccess(true)
+        setTimeout(() => setExportSuccess(false), 3000)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error exporting PDF:', error)
+      setError(error.message || 'Failed to export PDF')
+    } finally {
+      setIsExporting(false)
     }
   }
 
@@ -90,10 +102,25 @@ This summary was generated locally using on-device AI to ensure your privacy.`)
             </button>
             <button
               onClick={handleExportPDF}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+              disabled={!summary || isExporting}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Download className="w-4 h-4" />
-              Export PDF
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Exporting...
+                </>
+              ) : exportSuccess ? (
+                <>
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  Exported!
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Export PDF
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -102,6 +129,22 @@ This summary was generated locally using on-device AI to ensure your privacy.`)
       {/* Summary Content */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto">
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-900">Error</p>
+                <p className="text-sm text-red-800 mt-1">{error}</p>
+                <button
+                  onClick={generateSummary}
+                  className="mt-2 text-sm text-red-700 underline hover:text-red-800"
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
+          )}
+
           {isGenerating ? (
             <div className="flex flex-col items-center justify-center py-16">
               <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
@@ -116,11 +159,11 @@ This summary was generated locally using on-device AI to ensure your privacy.`)
                 </div>
               </div>
             </div>
-          ) : (
+          ) : !error ? (
             <div className="text-center py-16">
               <p className="text-gray-500">No summary generated yet</p>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Upload, File, Loader2 } from 'lucide-react'
+import { Upload, File, Loader2, AlertCircle } from 'lucide-react'
 import type { Document } from '../App'
+import { documentService } from '../services/documentService'
 
 interface Props {
   onDocumentLoaded: (doc: Document) => void
@@ -9,10 +10,12 @@ interface Props {
 export function DocumentUpload({ onDocumentLoaded }: Props) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [recentDocs, setRecentDocs] = useState<Document[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   const handleFileSelect = async () => {
     try {
       setIsProcessing(true)
+      setError(null)
 
       // Use Electron API to open file dialog
       const fileData = await window.electronAPI.openFile()
@@ -22,25 +25,30 @@ export function DocumentUpload({ onDocumentLoaded }: Props) {
         return
       }
 
+      // Parse document content
+      const parsed = await documentService.parseDocument(
+        fileData.buffer,
+        fileData.fileName
+      )
+
       // Create document object
       const doc: Document = {
         id: Date.now().toString(),
         name: fileData.fileName,
         type: fileData.fileExtension,
-        content: '', // Will be parsed later
+        content: parsed.text,
         filePath: fileData.filePath
       }
 
-      // TODO: Parse document content based on type
-      // For now, just load it
       onDocumentLoaded(doc)
 
       // Add to recent docs
       setRecentDocs(prev => [doc, ...prev.slice(0, 4)])
 
       setIsProcessing(false)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading document:', error)
+      setError(error.message || 'Failed to load document')
       setIsProcessing(false)
     }
   }
@@ -67,6 +75,12 @@ export function DocumentUpload({ onDocumentLoaded }: Props) {
             </>
           )}
         </button>
+        {error && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-red-800">{error}</p>
+          </div>
+        )}
       </div>
 
       {recentDocs.length > 0 && (
