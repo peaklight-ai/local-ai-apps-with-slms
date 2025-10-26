@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { DocumentUpload } from './components/DocumentUpload'
 import { SummaryView } from './components/SummaryView'
 import { ChatInterface } from './components/ChatInterface'
@@ -18,6 +18,8 @@ function App() {
   const [currentDocument, setCurrentDocument] = useState<Document | null>(null)
   const [activeTab, setActiveTab] = useState<'summary' | 'chat'>('summary')
   const [showSettings, setShowSettings] = useState(false)
+
+  console.log('[App] Rendering App component')
 
   const handleDocumentLoaded = (doc: Document) => {
     setCurrentDocument(doc)

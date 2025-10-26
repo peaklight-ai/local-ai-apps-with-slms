@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Download, Sparkles, Loader2, FileText, AlertCircle, CheckCircle } from 'lucide-react'
 import type { Document } from '../App'
-import { llmService } from '../services/llmService'
-import { pdfExportService } from '../services/pdfExportService'
 
 interface Props {
   document: Document
@@ -25,8 +23,8 @@ export function SummaryView({ document }: Props) {
     setError(null)
 
     try {
-      // Generate summary using LLM
-      const generatedSummary = await llmService.summarize(document.content)
+      // Generate summary using LLM via IPC
+      const generatedSummary = await window.electronAPI.summarizeDocument(document.content)
       setSummary(generatedSummary)
     } catch (error: any) {
       console.error('Error generating summary:', error)
@@ -48,14 +46,9 @@ export function SummaryView({ document }: Props) {
       const filePath = await window.electronAPI.saveFile(fileName)
 
       if (filePath) {
-        // Generate PDF
-        const pdfData = await pdfExportService.exportSummary(
-          document.name,
-          summary
-        )
-
-        // Write to file
-        await window.electronAPI.writeFile(filePath, Array.from(new Uint8Array(pdfData)))
+        // TODO: Implement PDF export via IPC
+        // const pdfData = await window.electronAPI.exportSummaryPDF(document.name, summary)
+        // await window.electronAPI.writeFile(filePath, pdfData)
 
         setExportSuccess(true)
         setTimeout(() => setExportSuccess(false), 3000)

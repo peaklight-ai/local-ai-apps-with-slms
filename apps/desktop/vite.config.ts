@@ -23,6 +23,25 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
+  optimizeDeps: {
+    exclude: [
+      '@docsummarizer/llm-client',
+      '@docsummarizer/document-parsers',
+      '@docsummarizer/rag-engine',
+      '@xenova/transformers',
+      'mammoth',
+      'pdf-parse'
+    ]
+  },
+  build: {
+    rollupOptions: {
+      external: [
+        '@docsummarizer/llm-client',
+        '@docsummarizer/document-parsers',
+        '@docsummarizer/rag-engine'
+      ]
+    }
+  },
   server: {
     port: 5173
   }

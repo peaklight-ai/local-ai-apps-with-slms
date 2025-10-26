@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Upload, File, Loader2, AlertCircle } from 'lucide-react'
 import type { Document } from '../App'
-import { documentService } from '../services/documentService'
 
 interface Props {
   onDocumentLoaded: (doc: Document) => void
@@ -25,8 +24,8 @@ export function DocumentUpload({ onDocumentLoaded }: Props) {
         return
       }
 
-      // Parse document content
-      const parsed = await documentService.parseDocument(
+      // Parse document content via IPC
+      const parsed = await window.electronAPI.parseDocument(
         fileData.buffer,
         fileData.fileName
       )

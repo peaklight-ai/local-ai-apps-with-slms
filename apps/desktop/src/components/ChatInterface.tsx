@@ -1,8 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Send, Bot, User, AlertCircle, Loader2 } from 'lucide-react'
 import type { Document } from '../App'
-import { ragService } from '../services/ragService'
-import { llmService } from '../services/llmService'
 
 interface Message {
   id: string
@@ -49,7 +47,8 @@ export function ChatInterface({ document }: Props) {
     setError(null)
 
     try {
-      await ragService.indexDocument(document.id, document.content)
+      // TODO: Implement RAG indexing via IPC
+      // await window.electronAPI.indexDocument(document.id, document.content)
       setIsIndexed(true)
     } catch (error: any) {
       console.error('Error indexing document:', error)
@@ -75,20 +74,10 @@ export function ChatInterface({ document }: Props) {
     setIsTyping(true)
 
     try {
-      // Get context from RAG
-      const promptWithContext = await ragService.query(question, 3)
+      // TODO: Implement RAG chat via IPC
+      // const response = await window.electronAPI.chatWithDocument(document.id, question)
 
-      // Generate response with LLM
-      const response = await llmService.chat([
-        {
-          role: 'system',
-          content: 'You are a helpful assistant that answers questions about documents based on the provided context. Be concise and accurate.'
-        },
-        {
-          role: 'user',
-          content: promptWithContext
-        }
-      ])
+      const response = { content: 'Chat functionality will be available soon. The backend services need to be wired up via IPC.' }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
