@@ -9,6 +9,20 @@ export default defineConfig({
     electron({
       main: {
         entry: 'electron/main.ts',
+        vite: {
+          build: {
+            rollupOptions: {
+              external: [
+                'pdf2json',
+                'mammoth',
+                '@xenova/transformers'
+              ]
+            },
+            commonjsOptions: {
+              ignoreDynamicRequires: true
+            }
+          }
+        }
       },
       preload: {
         input: 'electron/preload.ts',
@@ -30,7 +44,7 @@ export default defineConfig({
       '@docsummarizer/rag-engine',
       '@xenova/transformers',
       'mammoth',
-      'pdf-parse'
+      'pdf2json'
     ]
   },
   build: {

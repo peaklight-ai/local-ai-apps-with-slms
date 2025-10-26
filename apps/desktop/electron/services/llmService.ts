@@ -9,7 +9,7 @@ export class LLMService {
       this.currentModel = model || this.currentModel
       this.client = createLLMClient('ollama', {
         model: this.currentModel,
-        baseUrl: 'http://localhost:11434',
+        baseUrl: 'http://127.0.0.1:11434',
         temperature: 0.7,
         maxTokens: 2048
       })

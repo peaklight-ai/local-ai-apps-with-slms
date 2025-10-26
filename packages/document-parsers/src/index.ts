@@ -1,5 +1,5 @@
 import mammoth from 'mammoth'
-import pdfParse from 'pdf-parse'
+import PDF2JsonParser from 'pdf2json'
 
 export interface ParsedDocument {
   text: string
@@ -18,7 +18,7 @@ export interface DocumentParser {
 }
 
 /**
- * PDF Parser using pdf-parse
+ * PDF Parser using pdf2json
  */
 export class PDFParser implements DocumentParser {
   supports(fileType: string): boolean {
@@ -26,22 +26,62 @@ export class PDFParser implements DocumentParser {
   }
 
   async parse(buffer: Buffer, fileName: string): Promise<ParsedDocument> {
-    try {
-      const data = await pdfParse(buffer)
+    return new Promise((resolve, reject) => {
+      const pdfParser = new PDF2JsonParser(null, true)
 
-      return {
-        text: data.text,
-        metadata: {
-          fileName,
-          fileType: '.pdf',
-          pageCount: data.numpages,
-          wordCount: data.text.split(/\s+/).length,
-          charCount: data.text.length
+      pdfParser.on('pdfParser_dataError', (errData: any) => {
+        reject(new Error(`Failed to parse PDF: ${errData.parserError}`))
+      })
+
+      pdfParser.on('pdfParser_dataReady', (pdfData: any) => {
+        try {
+          // Extract text from all pages
+          const textPages: string[] = []
+          let pageCount = 0
+
+          if (pdfData.Pages) {
+            pageCount = pdfData.Pages.length
+
+            for (const page of pdfData.Pages) {
+              const pageTexts: string[] = []
+
+              if (page.Texts) {
+                for (const text of page.Texts) {
+                  if (text.R) {
+                    for (const run of text.R) {
+                      if (run.T) {
+                        // Decode URI-encoded text
+                        pageTexts.push(decodeURIComponent(run.T))
+                      }
+                    }
+                  }
+                }
+              }
+
+              textPages.push(pageTexts.join(' '))
+            }
+          }
+
+          const text = textPages.join('\n\n')
+
+          resolve({
+            text,
+            metadata: {
+              fileName,
+              fileType: '.pdf',
+              pageCount,
+              wordCount: text.split(/\s+/).filter(w => w.length > 0).length,
+              charCount: text.length
+            }
+          })
+        } catch (error: any) {
+          reject(new Error(`Failed to extract PDF text: ${error.message}`))
         }
-      }
-    } catch (error: any) {
-      throw new Error(`Failed to parse PDF: ${error.message}`)
-    }
+      })
+
+      // Parse the buffer
+      pdfParser.parseBuffer(buffer)
+    })
   }
 }
 

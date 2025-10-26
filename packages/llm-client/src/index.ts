@@ -37,7 +37,7 @@ export class OllamaClient implements ILLMClient {
 
   constructor(config: LLMConfig) {
     this.config = {
-      baseUrl: 'http://localhost:11434',
+      baseUrl: 'http://127.0.0.1:11434',
       temperature: 0.7,
       maxTokens: 2048,
       ...config
@@ -94,9 +94,16 @@ export class OllamaClient implements ILLMClient {
 
   async isAvailable(): Promise<boolean> {
     try {
-      await this.client.get('/api/tags')
+      const response = await this.client.get('/api/tags')
+      console.log('[Ollama] Successfully connected, response:', response.status)
       return true
-    } catch {
+    } catch (error: any) {
+      console.error('[Ollama] Connection failed:', {
+        message: error.message,
+        code: error.code,
+        response: error.response?.status,
+        baseURL: this.config.baseUrl
+      })
       return false
     }
   }
