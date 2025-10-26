@@ -22,6 +22,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // App paths
   getPath: (name: 'home' | 'appData' | 'userData' | 'temp'): Promise<string> =>
     ipcRenderer.invoke('app:getPath', name),
+
+  // Document processing
+  parseDocument: (buffer: number[], fileName: string): Promise<{ text: string }> =>
+    ipcRenderer.invoke('document:parse', buffer, fileName),
+
+  // LLM operations
+  summarizeDocument: (text: string): Promise<string> =>
+    ipcRenderer.invoke('llm:summarize', text),
 })
 
 // Type definitions for window object
@@ -32,6 +40,8 @@ declare global {
       saveFile: (defaultName: string) => Promise<string | null>
       writeFile: (filePath: string, data: number[]) => Promise<boolean>
       getPath: (name: 'home' | 'appData' | 'userData' | 'temp') => Promise<string>
+      parseDocument: (buffer: number[], fileName: string) => Promise<{ text: string }>
+      summarizeDocument: (text: string) => Promise<string>
     }
   }
 }

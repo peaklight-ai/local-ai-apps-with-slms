@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'path'
 import fs from 'fs/promises'
+import { documentService } from './services/documentService'
+import { llmService } from './services/llmService'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -111,4 +113,27 @@ ipcMain.handle('fs:writeFile', async (_, filePath: string, data: number[]) => {
 
 ipcMain.handle('app:getPath', (_, name: 'home' | 'appData' | 'userData' | 'temp') => {
   return app.getPath(name)
+})
+
+// Document parsing
+ipcMain.handle('document:parse', async (_, buffer: number[], fileName: string) => {
+  try {
+    const uint8Buffer = new Uint8Array(buffer)
+    const result = await documentService.parseDocument(uint8Buffer, fileName)
+    return { text: result.text }
+  } catch (error: any) {
+    console.error('Error parsing document:', error)
+    throw new Error(`Failed to parse document: ${error.message}`)
+  }
+})
+
+// LLM summarization
+ipcMain.handle('llm:summarize', async (_, text: string) => {
+  try {
+    const summary = await llmService.summarize(text)
+    return summary
+  } catch (error: any) {
+    console.error('Error generating summary:', error)
+    throw new Error(`Failed to generate summary: ${error.message}`)
+  }
 })
