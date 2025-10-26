@@ -2,7 +2,7 @@ import { createLLMClient, ILLMClient, LLMMessage } from '@docsummarizer/llm-clie
 
 export class LLMService {
   private client: ILLMClient | null = null
-  private currentModel: string = 'qwen3:8b'
+  private currentModel: string = 'granite3.3:8b'
 
   async initialize(model?: string): Promise<void> {
     try {

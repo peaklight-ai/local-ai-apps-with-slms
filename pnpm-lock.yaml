@@ -17,6 +17,18 @@ importers:
 
   apps/desktop:
     dependencies:
+      '@docsummarizer/document-parsers':
+        specifier: workspace:*
+        version: link:../../packages/document-parsers
+      '@docsummarizer/llm-client':
+        specifier: workspace:*
+        version: link:../../packages/llm-client
+      '@docsummarizer/rag-engine':
+        specifier: workspace:*
+        version: link:../../packages/rag-engine
+      '@docsummarizer/shared-ui':
+        specifier: workspace:*
+        version: link:../../packages/shared-ui
       '@tanstack/react-query':
         specifier: ^5.17.0
         version: 5.90.5(react@18.3.1)
@@ -26,6 +38,9 @@ importers:
       jspdf:
         specifier: ^2.5.1
         version: 2.5.2
+      lucide-react:
+        specifier: ^0.263.1
+        version: 0.263.1(react@18.3.1)
       mammoth:
         specifier: ^1.6.0
         version: 1.11.0
@@ -129,6 +144,25 @@ importers:
       '@types/node':
         specifier: ^20.11.0
         version: 20.19.23
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
+  packages/shared-ui:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.48
+        version: 18.3.26
+      '@types/react-dom':
+        specifier: ^18.2.18
+        version: 18.3.7(@types/react@18.3.26)
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
@@ -2889,6 +2923,14 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lucide-react@0.263.1(react@18.3.1):
+    resolution: {integrity: sha512-keqxAx97PlaEN89PXZ6ki1N8nRjGWtDa4021GFYLNj0RgruM5odbpl8GHTExj0hhPq3sF6Up0gnxt6TSHu+ovw==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.3.1
+    dev: false
 
   /mammoth@1.11.0:
     resolution: {integrity: sha512-BcEqqY/BOwIcI1iR5tqyVlqc3KIaMRa4egSoK83YAVrBf6+yqdAAbtUcFDCWX8Zef8/fgNZ6rl4VUv+vVX8ddQ==}

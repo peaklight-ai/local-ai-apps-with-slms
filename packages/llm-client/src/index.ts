@@ -110,7 +110,7 @@ export class OllamaClient implements ILLMClient {
     }
   }
 
-  async pullModel(modelName: string, onProgress?: (progress: number) => void): Promise<void> {
+  async pullModel(modelName: string, _onProgress?: (progress: number) => void): Promise<void> {
     try {
       const response = await this.client.post('/api/pull', {
         name: modelName,
@@ -135,20 +135,16 @@ export class OllamaClient implements ILLMClient {
  * Hugging Face client implementation (for future use)
  */
 export class HuggingFaceClient implements ILLMClient {
-  private config: LLMConfig
-  private apiKey?: string
-
-  constructor(config: LLMConfig, apiKey?: string) {
-    this.config = config
-    this.apiKey = apiKey
+  constructor(_config: LLMConfig, _apiKey?: string) {
+    // TODO: Store config and apiKey when implementing
   }
 
-  async chat(messages: LLMMessage[], config?: Partial<LLMConfig>): Promise<LLMResponse> {
+  async chat(_messages: LLMMessage[], _config?: Partial<LLMConfig>): Promise<LLMResponse> {
     // TODO: Implement HuggingFace Inference API
     throw new Error('HuggingFace client not implemented yet')
   }
 
-  async summarize(text: string, config?: Partial<LLMConfig>): Promise<string> {
+  async summarize(_text: string, _config?: Partial<LLMConfig>): Promise<string> {
     // TODO: Implement summarization via HF API
     throw new Error('HuggingFace client not implemented yet')
   }

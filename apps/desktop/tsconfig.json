@@ -14,11 +14,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "electron/**/*"],
-  "references": [
-    { "path": "../../packages/shared-ui" },
-    { "path": "../../packages/rag-engine" },
-    { "path": "../../packages/document-parsers" },
-    { "path": "../../packages/llm-client" }
-  ]
+  "include": ["src/**/*", "electron/**/*"]
 }

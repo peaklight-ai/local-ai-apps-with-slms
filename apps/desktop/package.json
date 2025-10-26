@@ -22,7 +22,12 @@
     "axios": "^1.6.5",
     "mammoth": "^1.6.0",
     "pdf-parse": "^1.1.1",
-    "jspdf": "^2.5.1"
+    "jspdf": "^2.5.1",
+    "lucide-react": "^0.263.1",
+    "@docsummarizer/llm-client": "workspace:*",
+    "@docsummarizer/document-parsers": "workspace:*",
+    "@docsummarizer/rag-engine": "workspace:*",
+    "@docsummarizer/shared-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.2.48",

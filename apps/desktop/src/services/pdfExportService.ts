@@ -62,7 +62,8 @@ export class PDFExportService {
       }
 
       // Return as array buffer
-      return doc.output('arraybuffer')
+      const arrayBuffer = doc.output('arraybuffer') as ArrayBuffer
+      return new Uint8Array(arrayBuffer)
     } catch (error: any) {
       console.error('Error exporting PDF:', error)
       throw new Error(`Failed to export PDF: ${error.message}`)
@@ -107,7 +108,11 @@ export class PDFExportService {
         // Add role
         doc.setFontSize(10)
         doc.setFont('helvetica', 'bold')
-        doc.setTextColor(message.role === 'user' ? 0, 102, 204 : 139, 0, 139)
+        if (message.role === 'user') {
+          doc.setTextColor(0, 102, 204) // Blue
+        } else {
+          doc.setTextColor(139, 0, 139) // Purple
+        }
         doc.text(message.role === 'user' ? 'You:' : 'AI:', 20, yPosition)
 
         // Add timestamp
@@ -145,7 +150,8 @@ export class PDFExportService {
         )
       }
 
-      return doc.output('arraybuffer')
+      const arrayBuffer = doc.output('arraybuffer') as ArrayBuffer
+      return new Uint8Array(arrayBuffer)
     } catch (error: any) {
       console.error('Error exporting chat PDF:', error)
       throw new Error(`Failed to export chat PDF: ${error.message}`)

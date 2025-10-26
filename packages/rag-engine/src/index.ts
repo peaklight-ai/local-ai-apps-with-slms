@@ -1,4 +1,4 @@
-import { pipeline, Pipeline } from '@xenova/transformers'
+import { pipeline } from '@xenova/transformers'
 
 export interface Document {
   id: string
@@ -21,7 +21,7 @@ export interface EmbeddingModel {
  * Embeddings using Transformers.js (runs locally in Node/Browser)
  */
 export class TransformersEmbedding implements EmbeddingModel {
-  private model: Pipeline | null = null
+  private model: any = null
   private modelName: string
   private dimension: number
 
