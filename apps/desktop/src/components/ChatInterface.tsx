@@ -47,12 +47,12 @@ export function ChatInterface({ document }: Props) {
     setError(null)
 
     try {
-      // TODO: Implement RAG indexing via IPC
-      // await window.electronAPI.indexDocument(document.id, document.content)
+      const result = await window.electronAPI.indexDocument(document.id, document.content)
+      console.log(`[Chat] Document indexed successfully, ${result.chunks} chunks`)
       setIsIndexed(true)
     } catch (error: any) {
       console.error('Error indexing document:', error)
-      setError('Failed to index document for chat')
+      setError('Failed to index document for chat. Make sure Ollama is running.')
     } finally {
       setIsIndexing(false)
     }
@@ -74,15 +74,12 @@ export function ChatInterface({ document }: Props) {
     setIsTyping(true)
 
     try {
-      // TODO: Implement RAG chat via IPC
-      // const response = await window.electronAPI.chatWithDocument(document.id, question)
-
-      const response = { content: 'Chat functionality will be available soon. The backend services need to be wired up via IPC.' }
+      const response = await window.electronAPI.chatWithDocument(document.id, question)
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response,
+        content: response.content,
         timestamp: new Date()
       }
 

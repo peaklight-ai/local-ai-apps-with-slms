@@ -34,9 +34,9 @@ function App() {
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">DocSummarizer</h1>
-            <p className="text-xs text-gray-500">Private • Local • Secure</p>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-semibold text-gray-900 truncate">Baynetna</h1>
+            <p className="text-xs text-gray-500 break-words">powered by peaklight.ai</p>
           </div>
         </div>
 

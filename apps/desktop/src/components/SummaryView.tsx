@@ -46,9 +46,8 @@ export function SummaryView({ document }: Props) {
       const filePath = await window.electronAPI.saveFile(fileName)
 
       if (filePath) {
-        // TODO: Implement PDF export via IPC
-        // const pdfData = await window.electronAPI.exportSummaryPDF(document.name, summary)
-        // await window.electronAPI.writeFile(filePath, pdfData)
+        const pdfData = await window.electronAPI.exportSummaryPDF(document.name, summary)
+        await window.electronAPI.writeFile(filePath, pdfData)
 
         setExportSuccess(true)
         setTimeout(() => setExportSuccess(false), 3000)
@@ -66,12 +65,12 @@ export function SummaryView({ document }: Props) {
       {/* Header */}
       <div className="bg-white px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
-            <div>
-              <h2 className="font-semibold text-gray-900">{document.name}</h2>
+            <div className="flex-1 min-w-0">
+              <h2 className="font-semibold text-gray-900 break-words">{document.name}</h2>
               <p className="text-sm text-gray-500">Document Summary</p>
             </div>
           </div>

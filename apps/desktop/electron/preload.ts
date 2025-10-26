@@ -30,6 +30,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // LLM operations
   summarizeDocument: (text: string): Promise<string> =>
     ipcRenderer.invoke('llm:summarize', text),
+
+  // PDF export
+  exportSummaryPDF: (documentName: string, summary: string): Promise<number[]> =>
+    ipcRenderer.invoke('pdf:exportSummary', documentName, summary),
+
+  // RAG operations
+  indexDocument: (documentId: string, content: string): Promise<{ success: boolean; chunks: number }> =>
+    ipcRenderer.invoke('rag:indexDocument', documentId, content),
+  chatWithDocument: (documentId: string, question: string): Promise<{ content: string }> =>
+    ipcRenderer.invoke('rag:chatWithDocument', documentId, question),
 })
 
 // Type definitions for window object
@@ -42,6 +52,9 @@ declare global {
       getPath: (name: 'home' | 'appData' | 'userData' | 'temp') => Promise<string>
       parseDocument: (buffer: number[], fileName: string) => Promise<{ text: string }>
       summarizeDocument: (text: string) => Promise<string>
+      exportSummaryPDF: (documentName: string, summary: string) => Promise<number[]>
+      indexDocument: (documentId: string, content: string) => Promise<{ success: boolean; chunks: number }>
+      chatWithDocument: (documentId: string, question: string) => Promise<{ content: string }>
     }
   }
 }

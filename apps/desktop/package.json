@@ -1,7 +1,7 @@
 {
   "name": "@docsummarizer/desktop",
   "version": "0.1.0",
-  "description": "Desktop app for private document summarization",
+  "description": "Baynetna - Private AI document assistant by peaklight.ai",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
