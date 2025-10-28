@@ -15,7 +15,8 @@ export default defineConfig({
               external: [
                 'pdf2json',
                 'mammoth',
-                '@xenova/transformers'
+                'sharp',
+                'onnxruntime-node'
               ]
             },
             commonjsOptions: {
@@ -42,7 +43,6 @@ export default defineConfig({
       '@docsummarizer/llm-client',
       '@docsummarizer/document-parsers',
       '@docsummarizer/rag-engine',
-      '@xenova/transformers',
       'mammoth',
       'pdf2json'
     ]

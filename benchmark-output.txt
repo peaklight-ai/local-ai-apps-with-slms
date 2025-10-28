@@ -1,0 +1,33 @@
+
+> docsummarizer@0.1.0 benchmark /Users/chadiabifadel/Files/peaklight.ai (PLAI).ai/R&D (Scout Lab)/PLAI Research/Local Apps With SLMs/local-ai-apps-with-slms
+> tsx scripts/benchmark.ts
+
+🚀 Starting Baynetna Performance Benchmarks
+============================================================
+
+💻 System Info:
+  Platform: darwin arm64
+  CPUs: Apple M3 Pro (12 cores)
+  Memory: 18.0 GB
+  Free Memory: 0.9 GB
+
+🔌 Testing Ollama connection...
+[Ollama] Successfully connected, response: 200
+✅ Ollama connected
+  Using model: nomic-embed-text:latest
+
+📊 Benchmarking: Embedding Generation (1000 chars) (3 iterations)
+  Iteration 1: 879ms
+  Iteration 2: 36ms
+  Iteration 3: 35ms
+  Average: 316ms
+  Range: 35ms - 879ms
+
+📊 Benchmarking: Document Indexing (5000 chars) (2 iterations)
+TypeError: documents.map is not a function
+    at VectorStore.addDocuments (/Users/chadiabifadel/Files/peaklight.ai (PLAI).ai/R&D (Scout Lab)/PLAI Research/Local Apps With SLMs/local-ai-apps-with-slms/packages/rag-engine/src/index.ts:101:29)
+    at RAGEngine.indexDocument (/Users/chadiabifadel/Files/peaklight.ai (PLAI).ai/R&D (Scout Lab)/PLAI Research/Local Apps With SLMs/local-ai-apps-with-slms/packages/rag-engine/src/index.ts:173:28)
+    at <anonymous> (/Users/chadiabifadel/Files/peaklight.ai (PLAI).ai/R&D (Scout Lab)/PLAI Research/Local Apps With SLMs/local-ai-apps-with-slms/scripts/benchmark.ts:112:23)
+    at benchmark (/Users/chadiabifadel/Files/peaklight.ai (PLAI).ai/R&D (Scout Lab)/PLAI Research/Local Apps With SLMs/local-ai-apps-with-slms/scripts/benchmark.ts:37:11)
+    at main (/Users/chadiabifadel/Files/peaklight.ai (PLAI).ai/R&D (Scout Lab)/PLAI Research/Local Apps With SLMs/local-ai-apps-with-slms/scripts/benchmark.ts:109:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

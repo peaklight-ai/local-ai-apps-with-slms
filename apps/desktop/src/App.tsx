@@ -3,7 +3,7 @@ import { DocumentUpload } from './components/DocumentUpload'
 import { SummaryView } from './components/SummaryView'
 import { ChatInterface } from './components/ChatInterface'
 import { ModelSelector } from './components/ModelSelector'
-import { FileText, MessageSquare, Settings, Sparkles } from 'lucide-react'
+import { FileText, MessageSquare, Settings } from 'lucide-react'
 
 export interface Document {
   id: string
@@ -31,9 +31,11 @@ function App() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between drag-region">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
+          <img
+            src="/baynetna-logo.png"
+            alt="Baynetna Logo"
+            className="w-10 h-10 object-contain"
+          />
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-semibold text-gray-900 truncate">Baynetna</h1>
             <p className="text-xs text-gray-500 break-words">powered by peaklight.ai</p>

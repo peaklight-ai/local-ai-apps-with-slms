@@ -11,5 +11,10 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
   // Document processing
   parseDocument: (buffer, fileName) => electron.ipcRenderer.invoke("document:parse", buffer, fileName),
   // LLM operations
-  summarizeDocument: (text) => electron.ipcRenderer.invoke("llm:summarize", text)
+  summarizeDocument: (text) => electron.ipcRenderer.invoke("llm:summarize", text),
+  // PDF export
+  exportSummaryPDF: (documentName, summary) => electron.ipcRenderer.invoke("pdf:exportSummary", documentName, summary),
+  // RAG operations
+  indexDocument: (documentId, content) => electron.ipcRenderer.invoke("rag:indexDocument", documentId, content),
+  chatWithDocument: (documentId, question) => electron.ipcRenderer.invoke("rag:chatWithDocument", documentId, question)
 });

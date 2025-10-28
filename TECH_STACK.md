@@ -105,41 +105,31 @@ local-ai-apps-with-slms/
 
 ### **Desktop App Architecture**
 
-```
-┌─────────────────────────────────────────────┐
-│           Electron Renderer (React)         │
-│  ┌─────────────┐  ┌──────────────────────┐ │
-│  │ UI Layer    │  │  State (Zustand)     │ │
-│  │ - Documents │  │  - Documents Store   │ │
-│  │ - Chat      │  │  - Settings Store    │ │
-│  │ - Settings  │  │  - Chat Store        │ │
-│  └─────────────┘  └──────────────────────┘ │
-└──────────────────┬──────────────────────────┘
-                   │ IPC (Secure Preload)
-┌──────────────────┴──────────────────────────┐
-│         Electron Main Process               │
-│  ┌──────────────────────────────────────┐  │
-│  │  Service Layer                       │  │
-│  │  - documentService.ts  (parsing)     │  │
-│  │  - llmService.ts       (inference)   │  │
-│  │  - ragService.ts       (embeddings)  │  │
-│  │  - pdfExportService.ts (export)      │  │
-│  └──────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────┐  │
-│  │  IPC Handlers                        │  │
-│  │  - document:parse                    │  │
-│  │  - llm:generateSummary               │  │
-│  │  - rag:indexDocument                 │  │
-│  │  - rag:query                         │  │
-│  └──────────────────────────────────────┘  │
-└─────────────────────────────────────────────┘
-                   │
-┌──────────────────┴──────────────────────────┐
-│          Ollama Server (Local)              │
-│  - LLM Inference (granite3.3:8b)           │
-│  - Embedding Generation (nomic-embed-text)  │
-└─────────────────────────────────────────────┘
-```
+**Layer 1: Electron Renderer (React)**
+- UI Components: Documents, Chat, Settings
+- State Management: Zustand stores (Documents, Settings, Chat)
+
+**Layer 2: IPC Communication**
+- Secure Preload Script bridging Renderer and Main process
+- Context isolation enabled for security
+
+**Layer 3: Electron Main Process**
+- Service Layer:
+  - `documentService.ts` - Document parsing and text extraction
+  - `llmService.ts` - LLM inference orchestration
+  - `ragService.ts` - Embeddings and vector search
+  - `pdfExportService.ts` - PDF generation and export
+
+- IPC Handlers:
+  - `document:parse` - Parse uploaded documents
+  - `llm:generateSummary` - Generate document summaries
+  - `rag:indexDocument` - Create vector embeddings
+  - `rag:query` - Semantic search and answer generation
+
+**Layer 4: Ollama Server (Local)**
+- LLM Inference: granite3.3:8b model
+- Embedding Generation: nomic-embed-text model
+- Runs on 127.0.0.1:11434 (IPv4 only)
 
 ---
 
@@ -319,16 +309,19 @@ local-ai-apps-with-slms/
 
 ## 📊 Performance Benchmarks
 
-**Hardware:** MacBook Pro M1, 16GB RAM, 512GB SSD
+**Hardware:** MacBook Pro M3 Pro, 12 cores, 18GB RAM
 
 | Operation | Time | Notes |
 |-----------|------|-------|
-| PDF Parse (10 pages) | 1-2s | Using pdf-parse |
-| DOCX Parse (10 pages) | 0.5-1s | Using mammoth |
-| Embedding Generation (1000 chars) | 0.2-0.5s | Via Ollama nomic-embed-text |
-| Summary Generation (5000 chars) | 10-20s | granite3.3:8b, ~15 tok/s |
-| RAG Query (with retrieval) | 0.5-1s + generation | Top-k=3, cosine similarity |
-| Vector Search (1000 chunks) | <50ms | In-memory cosine similarity |
+| Embedding Generation (1000 chars) | 35-40ms | Via Ollama nomic-embed-text (after warmup) |
+| Embedding Generation (cold start) | ~800ms | First run includes model loading |
+| Document Indexing (5000 chars) | ~200ms | Chunking + 6-7 embedding calls |
+| Vector Search (semantic) | <10ms | In-memory cosine similarity, k=3 |
+| Summary Generation (1000 chars) | 3-5s | granite3.3:8b, ~200 tokens |
+| Summary Generation (5000 chars) | 10-15s | granite3.3:8b, ~500 tokens |
+| RAG Query (end-to-end) | 1s + generation | Retrieval + context + LLM |
+
+**Note:** Benchmarks measured on January 2025. PDF/DOCX parsing times vary significantly based on document complexity and structure (typically 100-500ms per page for simple documents, up to 2-3s for complex layouts with tables/images).
 
 ---
 

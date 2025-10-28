@@ -79,5 +79,9 @@
       ],
       "category": "Office"
     }
+  },
+  "optionalDependencies": {
+    "onnxruntime-node": "^1.23.0",
+    "sharp": "^0.34.4"
   }
 }

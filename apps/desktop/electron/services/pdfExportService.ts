@@ -28,11 +28,13 @@ export class PDFExportService {
       try {
         // Try multiple paths for logo resolution (handles both dev and production)
         const possiblePaths = [
-          path.join(process.cwd(), 'apps', 'desktop', 'electron', 'assets', 'peaklight-logo.png'),
-          path.join(process.cwd(), 'electron', 'assets', 'peaklight-logo.png'),
-          path.join(process.cwd(), 'dist-electron', 'assets', 'peaklight-logo.png'),
-          path.join(__dirname, 'assets', 'peaklight-logo.png'),
-          path.join(__dirname, '..', 'assets', 'peaklight-logo.png')
+          path.join(process.cwd(), 'apps', 'desktop', 'electron', 'assets', 'baynetna-logo.png'),
+          path.join(process.cwd(), 'electron', 'assets', 'baynetna-logo.png'),
+          path.join(process.cwd(), 'public', 'baynetna-logo.png'),
+          path.join(process.cwd(), 'dist-electron', 'assets', 'baynetna-logo.png'),
+          path.join(__dirname, 'assets', 'baynetna-logo.png'),
+          path.join(__dirname, '..', 'assets', 'baynetna-logo.png'),
+          path.join(__dirname, '..', '..', 'public', 'baynetna-logo.png')
         ]
 
         let logoPath: string | null = null
@@ -120,11 +122,13 @@ export class PDFExportService {
       try {
         // Try multiple paths for logo resolution (handles both dev and production)
         const possiblePaths = [
-          path.join(process.cwd(), 'apps', 'desktop', 'electron', 'assets', 'peaklight-logo.png'),
-          path.join(process.cwd(), 'electron', 'assets', 'peaklight-logo.png'),
-          path.join(process.cwd(), 'dist-electron', 'assets', 'peaklight-logo.png'),
-          path.join(__dirname, 'assets', 'peaklight-logo.png'),
-          path.join(__dirname, '..', 'assets', 'peaklight-logo.png')
+          path.join(process.cwd(), 'apps', 'desktop', 'electron', 'assets', 'baynetna-logo.png'),
+          path.join(process.cwd(), 'electron', 'assets', 'baynetna-logo.png'),
+          path.join(process.cwd(), 'public', 'baynetna-logo.png'),
+          path.join(process.cwd(), 'dist-electron', 'assets', 'baynetna-logo.png'),
+          path.join(__dirname, 'assets', 'baynetna-logo.png'),
+          path.join(__dirname, '..', 'assets', 'baynetna-logo.png'),
+          path.join(__dirname, '..', '..', 'public', 'baynetna-logo.png')
         ]
 
         let logoPath: string | null = null
