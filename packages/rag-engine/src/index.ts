@@ -1,5 +1,3 @@
-import { pipeline } from '@xenova/transformers'
-
 export interface Document {
   id: string
   text: string
@@ -18,38 +16,44 @@ export interface EmbeddingModel {
 }
 
 /**
- * Embeddings using Transformers.js (runs locally in Node/Browser)
+ * Embeddings using Ollama API (truly local, no internet required)
  */
-export class TransformersEmbedding implements EmbeddingModel {
-  private model: any = null
+export class OllamaEmbedding implements EmbeddingModel {
+  private baseUrl: string
   private modelName: string
   private dimension: number
 
-  constructor(modelName: string = 'Xenova/all-MiniLM-L6-v2', dimension: number = 384) {
+  constructor(
+    baseUrl: string = 'http://127.0.0.1:11434',
+    modelName: string = 'nomic-embed-text',
+    dimension: number = 768
+  ) {
+    this.baseUrl = baseUrl
     this.modelName = modelName
     this.dimension = dimension
   }
 
-  async initialize(): Promise<void> {
-    if (!this.model) {
-      this.model = await pipeline('feature-extraction', this.modelName)
-    }
-  }
-
   async embed(texts: string[]): Promise<number[][]> {
-    await this.initialize()
-
     const embeddings: number[][] = []
 
     for (const text of texts) {
-      const output = await this.model!(text, {
-        pooling: 'mean',
-        normalize: true
+      const response = await fetch(`${this.baseUrl}/api/embeddings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: this.modelName,
+          prompt: text,
+        }),
       })
 
-      // Convert tensor to array
-      const embedding = Array.from(output.data) as number[]
-      embeddings.push(embedding)
+      if (!response.ok) {
+        throw new Error(`Ollama embeddings API error: ${response.statusText}`)
+      }
+
+      const data = await response.json() as { embedding: number[] }
+      embeddings.push(data.embedding)
     }
 
     return embeddings
@@ -210,12 +214,10 @@ Answer:`
 }
 
 /**
- * Factory to create a RAG engine with default settings
+ * Factory to create a RAG engine with Ollama embeddings
  */
-export async function createRAGEngine(): Promise<RAGEngine> {
-  const embeddings = new TransformersEmbedding()
-  await embeddings.initialize()
-
+export async function createRAGEngine(ollamaBaseUrl: string = 'http://127.0.0.1:11434'): Promise<RAGEngine> {
+  const embeddings = new OllamaEmbedding(ollamaBaseUrl)
   const vectorStore = new VectorStore(embeddings)
   return new RAGEngine(vectorStore)
 }
