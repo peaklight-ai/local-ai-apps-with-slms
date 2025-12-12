@@ -11,6 +11,7 @@ export function SummaryView({ document }: Props) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [exportError, setExportError] = useState<string | null>(null)
   const [exportSuccess, setExportSuccess] = useState(false)
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export function SummaryView({ document }: Props) {
     try {
       setIsExporting(true)
       setExportSuccess(false)
+      setExportError(null) // Clear any previous export errors
 
       const fileName = `${document.name.replace(/\.[^/.]+$/, '')}_summary.pdf`
       const filePath = await window.electronAPI.saveFile(fileName)
@@ -49,12 +51,13 @@ export function SummaryView({ document }: Props) {
         const pdfData = await window.electronAPI.exportSummaryPDF(document.name, summary)
         await window.electronAPI.writeFile(filePath, pdfData)
 
+        setExportError(null) // Clear any export errors on success
         setExportSuccess(true)
         setTimeout(() => setExportSuccess(false), 3000)
       }
     } catch (error: any) {
       console.error('Error exporting PDF:', error)
-      setError(error.message || 'Failed to export PDF')
+      setExportError(error.message || 'Failed to export PDF')
     } finally {
       setIsExporting(false)
     }
@@ -132,6 +135,21 @@ export function SummaryView({ document }: Props) {
                   className="mt-2 text-sm text-red-700 underline hover:text-red-800"
                 >
                   Try again
+                </button>
+              </div>
+            </div>
+          )}
+          {exportError && (
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-yellow-900">Export Error</p>
+                <p className="text-sm text-yellow-800 mt-1">{exportError}</p>
+                <button
+                  onClick={() => setExportError(null)}
+                  className="mt-2 text-sm text-yellow-700 underline hover:text-yellow-800"
+                >
+                  Dismiss
                 </button>
               </div>
             </div>
